@@ -45,10 +45,25 @@ class HBNBCommand(cmd.Cmd):
         try:
             args = shlex.split(args)
             new_instance = eval(args[0])()
+            try:
+                for x in args[1:]:
+                    params = x.split('=')
+                    params[1] = params[1].replace('_', ' ')
+                    try:
+                        if params[1][0].isdigit():
+                            if '.' in params[1]:
+                                params[1] = float(params[1])
+                            else:
+                                params[1] = int(params[1])
+                    except:
+                        pass
+                    setattr(new_instance, params[0], params[1])
+            except:
+                pass
             new_instance.save()
             print(new_instance.id)
 
-        except:
+        except BaseException:
             print("** class doesn't exist **")
 
     def do_show(self, args):
@@ -71,7 +86,6 @@ class HBNBCommand(cmd.Cmd):
         except NameError:
             print("** class doesn't exist **")
             return
-        key = args[0] + "." + args[1]
         key = args[0] + "." + args[1]
         try:
             value = obj_dict[key]
@@ -213,7 +227,7 @@ class HBNBCommand(cmd.Cmd):
             cmd_arg = args[0] + " " + args[2]
             func = functions[args[1]]
             func(cmd_arg)
-        except:
+        except BaseException:
             print("*** Unknown syntax:", args[0])
 
 
