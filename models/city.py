@@ -2,7 +2,7 @@
 '''
     Define the class City.
 '''
-from models.base_model import BaseModel, Base 
+from models.base_model import BaseModel, Base
 from sqlalchemy import Table, Column, ForeignKey, String
 
 
