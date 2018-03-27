@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """DB Storage model"""
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.user import User
