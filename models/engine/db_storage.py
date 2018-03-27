@@ -15,22 +15,26 @@ class DBStorage:
     """Database storage
 
     Attributes:
-            __engine: home base for the DB and its DBAPI
-            __session: session of db-object interaction
+    __engine: home base for the DB and its DBAPI
+    __session: session of db-object interaction
     """
     __engine = None
     __session = None
 
     def __init__(self):
         """Constructor method"""
+        mysql_user = os.getenv('HBNB_MYSQL_USER')
+        mysql_pwd = os.getenv('HBNB_MYSQL_PWD')
+        mysql_host = os.getenv('HBNB_MYSQL_HOST')
+        mysql_db = os.getenv('HBNB_MYSQL_DB')
         self.__engine = create_engine(
             'mysql+mysqldb://{}:{}@{}/{}'.format(
-                HBNB_MYSQL_USER,
-                HBNB_MYSQL_PWD,
-                HBNB_MYSQL_HOST,
-                HBNB_MYSQL_DB),
+                mysql_user,
+                mysql_pwd,
+                mysql_host,
+                mysql_db),
             pool_pre_ping=True)
-        if os.environ['HBNB_ENV'] == 'test':
+        if os.getenv['HBNB_ENV'] == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
@@ -46,22 +50,22 @@ class DBStorage:
             result[key] = obj
         return result
 
-        def new(self, obj):
-            """Add obj to current db session"""
-            if obj:
-                self.__session.add(obj)
+    def new(self, obj):
+        """Add obj to current db session"""
+        if obj:
+            self.__session.add(obj)
 
-        def save(self):
-            """Commits changes to current db session"""
-            self.__session.commit()
+    def save(self):
+        """Commits changes to current db session"""
+        self.__session.commit()
 
-        def delete(self, obj=None):
-            """Deletes obj from current db session"""
-            if obj:
-                self.__session.delete(obj)
+    def delete(self, obj=None):
+        """Deletes obj from current db session"""
+        if obj:
+            self.__session.delete(obj)
 
-        def reload(self):
-            """Creates db session and creates all tables in db"""
+    def reload(self):
+        """Creates db session and creates all tables in db"""
         Base.metadata.create_all(self.__engine)
         Session = scoped_session(sessionmaker
                                  (bind=self.__engine, expire_on_commit=False))
