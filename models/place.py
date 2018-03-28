@@ -54,3 +54,5 @@ class Place(BaseModel, Base):
         @amenities.setter
         def amenities(self, obj):
             """sets file storage"""
+            if type(obj) is Amenity:
+                amenity_ids.append(obj.id)
