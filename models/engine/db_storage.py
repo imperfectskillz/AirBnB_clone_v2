@@ -15,7 +15,7 @@ class DBStorage:
     """Database storage
 
     Attributes:
-    __engine: home base for the DB and its DBAPI
+    __engine: homebase for the DB and its DBAPI
     __session: session of db-object interaction
     """
     __engine = None
