@@ -19,7 +19,7 @@ class FileStorage:
         '''
         if cls:
             return {k: v for k, v in self.__objects.items()
-                    if v.__class__.__name__ == cls}
+                    if v.__class__ == cls}
         return self.__objects
 
     def new(self, obj):
