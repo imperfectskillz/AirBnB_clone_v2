@@ -46,4 +46,11 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             """gets list of Amenity objs where amenity is linked to Place"""
+            amenity_dict = {}
+            amenity_dict = models.storage.all(Amenity)
+            return [amenity for amenity in amenity_dict.values()
+                    if amenity.amenity_id == self.id]
 
+        @amenities.setter
+        def amenities(self, obj):
+            """sets file storage"""
