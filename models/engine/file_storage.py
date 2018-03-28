@@ -17,6 +17,9 @@ class FileStorage:
         '''
             Return the dictionary
         '''
+		if cls:
+			return {k: v for k, v in self.__objects.items()
+					if v.__class__.__name__ == cls}
         return self.__objects
 
     def new(self, obj):
