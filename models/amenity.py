@@ -2,13 +2,11 @@
 '''
     Implementation of the Amenity class
 '''
-from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, ForeignKey, Integer, Float
+from models.base_model import BaseModel
 
 
-class Amenity(BaseModel, Base):
+class Amenity(BaseModel):
     '''
         Implementation for the Amenities.
     '''
-	__tablename__ = 'amenities'
-    name = Column(String(128), nullable=False)
+    name = ""
