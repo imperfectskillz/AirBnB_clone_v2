@@ -1,7 +1,7 @@
-#!/usr/bin/bash env
+#!/usr/bin/env bash
 # prepares web servers
 sudo apt-get update
-sudo apg-get install nginx
+sudo apt-get install nginx -y
 sudo mkdir /data/
 sudo mkdir /data/web_static/
 sudo mkdir /data/web_static/releases/
