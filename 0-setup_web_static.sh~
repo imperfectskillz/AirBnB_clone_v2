@@ -1,0 +1,4 @@
+#!/usr/bin/bash env
+# prepares web servers
+sudo apt-get update
+sudo apg-get install nginx
