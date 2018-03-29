@@ -11,6 +11,7 @@ def do_pack():
     filetime = datetime.now().strftime('%Y%m%d%H%M%s')
     filename = 'versions/web_static_{}.tgz'.format(filetime)
     try:
+        local("mkdir -p versions")
         local('tar -cvzf {} web_static'.format(filename))
         return filename
     except:
