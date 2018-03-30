@@ -5,6 +5,7 @@
 import cmd
 import json
 import shlex
+from models import classes
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
@@ -55,7 +56,7 @@ class HBNBCommand(cmd.Cmd):
                                 params[1] = float(params[1])
                             else:
                                 params[1] = int(params[1])
-                    except:
+                    except BaseException:
                         pass
                     setattr(new_instance, params[0], params[1])
             except:

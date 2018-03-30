@@ -3,14 +3,13 @@
     Implementation of the State class
 '''
 
-import models
 import os
 from models.base_model import BaseModel, Base
 from sqlalchemy import Table, Column, String
 from sqlalchemy.orm import relationship
 
 
-class State(BaseModel):
+class State(BaseModel, Base):
     '''
         Implementation for the State.
     '''

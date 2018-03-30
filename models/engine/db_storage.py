@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """DB Storage model"""
 import os
+import models
+from models.base_model import BaseModel, Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.user import User
@@ -9,6 +11,8 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+
+cls_list = [State, City]
 
 
 class DBStorage:
@@ -42,18 +46,19 @@ class DBStorage:
         result = {}
         if cls:
             cls_objs = self.__session.query(cls).all()
+            for obj in cls_objs:
+                key = obj.__class__.__name__ + '.' + obj.id
+                result[key] = obj
         else:
-            cls_objs = self.__session.query(User, State, City,
-                                            Amenity, Place, Review).all()
-        for obj in cls_objs:
-            key = obj.__class__.__name__ + '.' + obj.id
-            result[key] = obj
+            for x in cls_list:
+                for obj in self.__session.query(x):
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    result[key] = obj
         return result
 
     def new(self, obj):
         """Add obj to current db session"""
-        if obj:
-            self.__session.add(obj)
+        self.__session.add(obj)
 
     def save(self):
         """Commits changes to current db session"""
@@ -61,8 +66,7 @@ class DBStorage:
 
     def delete(self, obj=None):
         """Deletes obj from current db session"""
-        if obj:
-            self.__session.delete(obj)
+        self.__session.delete(obj)
 
     def reload(self):
         """Creates db session and creates all tables in db"""
