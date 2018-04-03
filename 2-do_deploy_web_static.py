@@ -36,12 +36,10 @@ def do_deploy(archive_path):
             run("tar -xzf /tmp/{} -C /data/web_static/releases/{}".format(
                 file, file1))
             run("rm /tmp/{}".format(file))
-            run("mv /data/web_static/releases/{}/web_static/* /data/web_static/
-            releases/{}/".format(file1, file1))
+            run("mv /data/web_static/releases/{}/web_static/* /data/web_static/releases/{}/".format(file1, file1))
             run("rm -rf /data/web_static/releases/{}/web_static".format(file1))
             run("rm -rf /data/web_static/current")
-            run("ln -s /data/web_static/releases/{}/ /data/web_static/current".
-                format(file1))
+            run("ln -s /data/web_static/releases/{}/ /data/web_static/current".format(file1))
             return True
         except:
             return False
