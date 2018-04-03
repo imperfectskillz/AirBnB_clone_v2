@@ -52,4 +52,5 @@ def deploy():
     temp = do_pack()
     if temp is None:
         return False
-    return do_deploy(temp)
+    temp1 = do_deploy(temp)
+    return temp1
