@@ -6,7 +6,7 @@ import os
 
 
 env.hosts = ["52.91.246.129", "107.23.155.217"]
-
+env.user = "ubuntu"
 
 def do_pack():
     """
@@ -32,7 +32,7 @@ def do_deploy(archive_path):
         try:
             put(archive_path, "/tmp/{}".format(file))
             file1 = file.split(".")[0]
-            run("mkdir -p /data/web_static/releases/()/".format(file1))
+            run("mkdir -p /data/web_static/releases/{}/".format(file1))
             run("tar -xzf /tmp/{} -C /data/web_static/releases/{}".format(
                 file, file1))
             run("rm /tmp/{}".format(file))
