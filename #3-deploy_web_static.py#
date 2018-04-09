@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#fabric script generates a tgz archive
+# fabric script generates a tgz archive
 from fabric.api import *
 from datetime import datetime
 import os
@@ -50,6 +50,8 @@ def deploy():
     set-up
     """
     temp = do_pack()
-    if not temp:
+    if temp is None:
         return False
     return do_deploy(temp)
+fers Tools Python Help
+            return False
