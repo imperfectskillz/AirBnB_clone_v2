@@ -2,11 +2,11 @@
 '''
     Implementing the console for the HBnB project.
 '''
+import re
 import cmd
 import json
 import shlex
-from models.engine.file_storage import FileStorage
-from models.engine.db_storage import DBStorage
+import models
 from models.base_model import BaseModel
 from models.user import User
 from models.place import Place
@@ -14,13 +14,13 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-from os import environ
 
 
 class HBNBCommand(cmd.Cmd):
     '''
         Contains the entry point of the command interpreter.
     '''
+
     prompt = ("(hbnb) ")
 
     def do_quit(self, args):
@@ -40,36 +40,35 @@ class HBNBCommand(cmd.Cmd):
             Create a new instance of class BaseModel and saves it
             to the JSON file.
         '''
-
         if len(args) == 0:
             print("** class name missing **")
             return
         try:
-            args = shlex.split(args)
+            args = re.split("\s|=", args)
             new_instance = eval(args[0])()
 
-            for attrib in args:  # take in params for object creation
-                if attrib.count("=") == 1 and attrib[
-                        0] != "=" and attrib[-1] != "=":
-                    attr_val = attrib.split("=")
-                    attr_val[1] = attr_val[1].replace("_", " ")
-
-                    if attr_val[1].isdigit():
-                        attr_val[1] = int(attr_val[1])
-                    else:
-                        try:
-                            float(attr_val[1])
-                            attr_val[1] = float(attr_val[1])
-                        except:
-                            pass
-
-                    setattr(new_instance, attr_val[0], attr_val[1])
-
+            for idx in range(1, len(args), 2):
+                key = args[idx]
+                value = args[idx + 1]
+                try:
+                    new_instance.__getattribute__(key)
+                except AttributeError:
+                    continue
+                if re.search("^\".*\"$", value) is not None:
+                    value = value.replace("_", " ")
+                    value = value.replace("\"", "")
+                elif "." in value:
+                    value = float(value)
+                elif re.search("\d.*", value) is not None:
+                    value = int(value)
+                else:
+                    continue
+                setattr(new_instance, key, value)
             new_instance.save()
             print(new_instance.id)
-
-        except:
+        except NameError:
             print("** class doesn't exist **")
+            return
 
     def do_show(self, args):
         '''
@@ -83,7 +82,8 @@ class HBNBCommand(cmd.Cmd):
         if len(args) == 1:
             print("** instance id missing **")
             return
-        storage = FileStorage()
+        storage = models.storage
+#        storage = FileStorage()
         storage.reload()
         obj_dict = storage.all()
         try:
@@ -91,6 +91,7 @@ class HBNBCommand(cmd.Cmd):
         except NameError:
             print("** class doesn't exist **")
             return
+        key = args[0] + "." + args[1]
         key = args[0] + "." + args[1]
         try:
             value = obj_dict[key]
@@ -111,7 +112,7 @@ class HBNBCommand(cmd.Cmd):
             return
         class_name = args[0]
         class_id = args[1]
-        storage = FileStorage()
+        storage = models.storage
         storage.reload()
         obj_dict = storage.all()
         try:
@@ -132,16 +133,15 @@ class HBNBCommand(cmd.Cmd):
             based or not on the class name.
         '''
         obj_list = []
-        if environ.get("HBNB_TYPE_STORAGE") == "db":
-            storage = DBStorage()
-        else:
-            storage = FileStorage()
+        storage = models.storage
         storage.reload()
-        objects = storage.all()
-
         try:
             if len(args) != 0:
                 eval(args)
+            if len(args) == 0:
+                objects = storage.all()
+            else:
+                objects = storage.all(args)
         except NameError:
             print("** class doesn't exist **")
             return
@@ -159,7 +159,7 @@ class HBNBCommand(cmd.Cmd):
             Update an instance based on the class name and id
             sent as args.
         '''
-        storage = FileStorage()
+        storage = models.storage
         storage.reload()
         args = shlex.split(args)
         if len(args) == 0:
@@ -205,7 +205,7 @@ class HBNBCommand(cmd.Cmd):
             Counts/retrieves the number of instances.
         '''
         obj_list = []
-        storage = FileStorage()
+        storage = models.storage
         storage.reload()
         objects = storage.all()
         try:

@@ -13,28 +13,19 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    def delete(self, obj=None):
-        '''
-        Delete obj from database if it exists
-        '''
-
-        del_flag = 0
-
-        if obj:
-            for record in self.__objects:
-                test = record.split(".")
-                if test[1] == obj.id:
-                    del_flag = record
-
-        if del_flag != 0:
-            self.__objects.pop(del_flag, None)
-            self.save()
-
     def all(self, cls=None):
         '''
             Return the dictionary
         '''
-        return self.__objects
+        if cls is None:
+            return self.__objects
+        else:
+            my_dict = {}
+            for k, v in self.__objects.items():
+                name = k.split('.')
+                if name[0] in str(cls):
+                    my_dict[k] = v
+            return my_dict
 
     def new(self, obj):
         '''
@@ -71,8 +62,18 @@ class FileStorage:
         except FileNotFoundError:
             pass
 
+    def delete(self, obj=None):
+        '''
+        Deletes an object from __objects if it is inside of __objects
+        '''
+        copy_storage = dict(FileStorage.__objects)
+        desired_key = obj
+        for key, val in copy_storage.items():
+            if val == desired_key:
+                del(obj)
+                del FileStorage.__objects[key]
+                self.save()
+
     def close(self):
-        '''
-            deserialize the JSON file into objects
-        '''
+        ''' deserializes json file to objects '''
         self.reload()
