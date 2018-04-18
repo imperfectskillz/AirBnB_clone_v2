@@ -2,27 +2,30 @@
 '''
     Implementation of the State class
 '''
-
-import os
 from models.base_model import BaseModel, Base
-from sqlalchemy import Table, Column, String
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from os import environ
 
 
 class State(BaseModel, Base):
     '''
         Implementation for the State.
     '''
-    __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
-    if os.getenv('HBNB_TYPE_STORAGE') == 'db':
-        cities = relationship("City",
-                              backref="state", cascade="delete")
+    if environ.get("HBNB_TYPE_STORAGE") == "db":
+        __tablename__ = "states"
+        name = Column(String(128), nullable=False)
+        cities = relationship("City", cascade="all, delete-orphan",
+                              backref="state")
+
     else:
+        name = ""
+
         @property
         def cities(self):
-            """gets list of City objs where state_id=State.id"""
+            city_list = []
             city_dict = models.storage.all(City)
-            return [city for city in city_dict.values()
-                    if city.state_id == self.id]
-    #name = ""
+            for k, v in city_dict.items():
+                if v.state_id == self.id:
+                    city_list.append(value)
+            return city_list

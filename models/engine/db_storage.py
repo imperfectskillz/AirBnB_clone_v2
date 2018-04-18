@@ -1,76 +1,73 @@
 #!/usr/bin/python3
 """DB Storage model"""
-import os
-import models
-from models.base_model import BaseModel, Base
+from os import environ
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from models.base_model import BaseModel, Base
+import models
+from models.city import City
+from models.state import State
 from models.user import User
 from models.place import Place
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
 from models.review import Review
+from models.amenity import Amenity
 
-cls_list = [State, City, User]
+class_list = [City, State, User, Place, Review, Amenity]
 
 
 class DBStorage:
-    """Database storage
+    """ Defines database storage """
 
-    Attributes:
-    __engine: homebase for the DB and its DBAPI
-    __session: session of db-object interaction
-    """
     __engine = None
-    __session = None
+    __sesion = None
 
     def __init__(self):
-        """Constructor method"""
-        mysql_user = os.getenv('HBNB_MYSQL_USER')
-        mysql_pwd = os.getenv('HBNB_MYSQL_PWD')
-        mysql_host = os.getenv('HBNB_MYSQL_HOST')
-        mysql_db = os.getenv('HBNB_MYSQL_DB')
+        """ Init a DBStorage object """
         self.__engine = create_engine(
-            'mysql+mysqldb://{}:{}@{}/{}'.format(
-                mysql_user,
-                mysql_pwd,
-                mysql_host,
-                mysql_db),
-            pool_pre_ping=True)
-        if os.getenv('HBNB_ENV') == 'test':
+            "mysql+mysqldb://{}:{}@{}/{}".format(
+                environ.get("HBNB_MYSQL_USER"),
+                environ.get("HBNB_MYSQL_PWD"),
+                environ.get("HBNB_MYSQL_HOST"),
+                environ.get("HBNB_MYSQL_DB")), pool_pre_ping=True)
+
+        if environ.get("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Query all objects given a class name (if no class name, all objs)"""
-        result = {}
+        """ Queries all objects in current DB session against cls """
+        results = {}
+
         if cls:
-            cls_objs = self.__session.query(cls).all()
-            for obj in cls_objs:
-                key = obj.__class__.__name__ + '.' + obj.id
-                result[key] = obj
+            for value in self.__session.query(cls):
+                key = "{}.{}".format(value.__class__.__name__, value.id)
+                results[key] = value
         else:
-            for x in cls_list:
-                for obj in self.__session.query(x):
-                    key = obj.__class__.__name__ + '.' + obj.id
-                    result[key] = obj
-        return result
+            for a_class in class_list:
+                for value in self.__session.query(a_class):
+                    key = "{}.{}".format(value.__class__.__name__, value.id)
+                    results[key] = value
+
+        return (results)
 
     def new(self, obj):
-        """Add obj to current db session"""
+        """ Add the object to the current database session """
         self.__session.add(obj)
 
     def save(self):
-        """Commits changes to current db session"""
+        """ Commit all changes of the current database session """
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Deletes obj from current db session"""
+        """ Delete from the current database session obj if not None """
         self.__session.delete(obj)
 
     def reload(self):
-        """Creates db session and creates all tables in db"""
+        """ Create all tables in the database """
         Base.metadata.create_all(self.__engine)
-        Session = scoped_session(sessionmaker
-                                 (bind=self.__engine, expire_on_commit=False))
-        self.__session = Session()
+        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        scoped = scoped_session(Session)
+        self.__session = scoped()
+
+    def close(self):
+        """ close private attirbute session """
+        self.__session.remove()
