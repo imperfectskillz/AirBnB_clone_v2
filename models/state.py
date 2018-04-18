@@ -13,7 +13,7 @@ class State(BaseModel, Base):
         Implementation for the State.
     '''
     if environ.get("HBNB_TYPE_STORAGE") == "db":
-        __tablename__ = "states"
+        __tablename__ = 'states'
         name = Column(String(128), nullable=False)
         cities = relationship("City", cascade="all, delete-orphan",
                               backref="state")
