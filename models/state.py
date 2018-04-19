@@ -26,6 +26,7 @@ class State(BaseModel, Base):
         @property
         def cities(self):
             city_list = []
+            city_dict = {}
             city_dict = models.storage.all(City)
             for k, v in city_dict.items():
                 if v.state_id == self.id:
