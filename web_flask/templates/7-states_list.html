@@ -4,11 +4,11 @@
     <TITLE>HBNB</TITLE>
   </HEAD>
   <BODY>
-    <h1>States</H1>
+    <H1>States</H1>
     <UL>
-    {% for x in states|sort(attribute='name') %}
-      <LI>{{ x.id }}: <B>{{ x.name }}</B></LI>
-    {% endif %}
+      {% for x in states|sort(attribute='name') %}
+      <LI>{{x.id}}: <B>{{x.name}}</B></LI>
+    {% endfor %}
     </UL>
   </BODY>
 </HTML>
